@@ -9,6 +9,9 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Print to console
-        run: echo Hello Github Actions!
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: el.reeeey@gmail.com
+          password: ACO07144DJDFY10
      
