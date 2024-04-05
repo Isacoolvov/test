@@ -1,34 +1,38 @@
-name: Check for Changes
+name: Check for Server Changes
 
 on:
   push:
     branches:
-      - main  # Замените на вашу основную ветку
+      - main
 
 jobs:
-  check_changes:
+  check_server_changes:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Check for changes in a specific folder
-        id: check_changes
+      - name: Get the SHA of the previous commit
         run: |
-          git fetch
-          CHANGED_FILES=$(git diff --name-only origin/main -- secret-santa-app/)
+          PREVIOUS_COMMIT=$(git rev-parse HEAD^)
+          echo "::set-output name=previous_commit::$PREVIOUS_COMMIT"
+
+      - name: Check for changes in the server folder
+        id: check_server_changes
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ steps.get_previous_commit.outputs.previous_commit }} HEAD -- secret-santa-app/)
           if [ -n "$CHANGED_FILES" ]; then
-            echo "Changes detected in the specified folder: $CHANGED_FILES"
-            echo "changes=true" >> $GITHUB_ENV
+            echo "Changes detected in the server folder: $CHANGED_FILES"
+            echo "::set-output name=server_changes::true"
           else
-            echo "No changes detected in the specified folder. Exiting."
-            echo "changes=false" >> $GITHUB_ENV
+            echo "No changes detected in the server folder. Exiting."
+            echo "::set-output name=server_changes::false"
             exit 0
           fi
 
-      - name: Do something if changes present
-        if: env.changes == 'true'
+      - name: Do something if server changes present
+        if: steps.check_server_changes.outputs.server_changes == 'true'
         run: |
-          # Добавьте сюда действия, которые нужно выполнить в случае наличия изменений в указанной папке
-          echo "There are changes in the specified folder, performing necessary actions."
+          # Добавьте сюда действия, которые нужно выполнить в случае наличия изменений в папке server
+          echo "There are changes in the server folder, performing necessary actions."
