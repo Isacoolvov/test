@@ -1,33 +1,22 @@
-name: Check for Server Changes
+name: Show Cache Contents
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  check_server_changes:
+  show_cache:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Get the list of changed files in the server folder
-        id: check_server_changes
-        run: |
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- secret-santa-app/)
-          if [ -n "$CHANGED_FILES" ]; then
-            echo "Changes detected in the server folder: $CHANGED_FILES"
-            echo "::set-output name=server_changes::true"
-          else
-            echo "No changes detected in the server folder. Exiting."
-            echo "::set-output name=server_changes::false"
-            exit 0
-          fi
-
-      - name: Do something if server changes present
-        if: steps.check_server_changes.outputs.server_changes == 'true'
-        run: |
-          # Добавьте сюда действия, которые нужно выполнить в случае наличия изменений в папке server
-          echo "There are changes in the server folder, performing necessary actions."
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Display Cache Contents
+      run: |
+        # Проверяем наличие кэша для указанной папки
+        if [[ -d "$HOME/.cache/secret-santa-app" ]]; then
+          echo "Кэш для папки secret-santa-app найден:"
+          # Выводим содержимое кэша
+          ls -la "$HOME/.cache/secret-santa-app"
+        else
+          echo "Кэш для папки secret-santa-app не найден."
+        fi
