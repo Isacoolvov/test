@@ -26,5 +26,5 @@ jobs:
         with:
           context: secret-santa-app
           push: true
-          tags: user/app:latest
+          tags: isacoolvov/secret-santa-app:latest
      
