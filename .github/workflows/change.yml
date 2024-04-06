@@ -1,6 +1,6 @@
 name: Show Cache Contents
 
-on: [push]
+on: workflow_dispatch
 
 jobs:
   show_cache:
