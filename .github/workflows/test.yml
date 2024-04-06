@@ -21,23 +21,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-      - name: Get current tag
-        id: get_tag
-        run: |
-          TAG=$(curl -sS "https://registry.hub.docker.com/v2/repositories/***/secret-santa-app/tags/latest" | jq -r '.name')
-          echo "TAG=$TAG" >> $GITHUB_ENV
-
-      - name: Increment tag
-        id: increment_tag
-        run: |
-          NEW_TAG=$(echo latest | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
-          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
-
-
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: secret-santa-app
           push: true
-          tags: isacoolvov/secret-santa-app:${{ steps.increment_tag.outputs.NEW_TAG }}
+          tags: isacoolvov/secret-santa-app:latest
      
