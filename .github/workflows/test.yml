@@ -23,11 +23,16 @@ jobs:
           
       - name: Get current tag
         id: get_tag
-        run: echo "::set-output name=TAG::$(curl -sS "https://registry.hub.docker.com/v2/repositories/isacoolvov/secret-santa-app/tags/latest" | jq -r '.name')"
+        run: |
+          TAG=$(curl -sS "https://registry.hub.docker.com/v2/repositories/***/secret-santa-app/tags/latest" | jq -r '.name')
+          echo "TAG=$TAG" >> $GITHUB_ENV
 
       - name: Increment tag
         id: increment_tag
-        run: echo "::set-output name=NEW_TAG::$(echo ${{ steps.get_tag.outputs.TAG }} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')"
+        run: |
+          NEW_TAG=$(echo latest | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+
 
       - name: Build and push
         uses: docker/build-push-action@v5
